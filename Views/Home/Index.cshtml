@@ -1,0 +1,145 @@
+﻿@{
+      ViewData["Title"] = "Home Page";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link href="~/css/angCss.css" rel="stylesheet" />
+<script src="~/js/video.js"></script>
+<div ng-app="myApp">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                  <ul class="navbar-nav">
+                        <li class="nav-item active">
+                              <a class="nav-link" href="#/!">Video Games <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                              <a class="nav-link" href="#/!">Video Details</a>
+                        </li>
+                        
+                  </ul>
+            </div>
+      </nav>
+
+
+      <div ng-view></div>
+
+
+
+</div>
+<script>
+      var app = angular.module("myApp", ["ngRoute"]);
+      app.config(function ($routeProvider) {
+            $routeProvider
+
+                  .when("/", {
+                        templateUrl: "/pages/videopage.html",
+                        controller: 'videoController'
+                  })
+                  .when("/addChange", {
+                        templateUrl: "/pages/videoDetails.html",
+                        controller: 'videoDetailsCTRL'
+                  });
+      });
+      app.controller('videoController', ['$scope', '$http', '$rootScope', '$window', function ($scope, $http, $rootScope, $window) {
+            var pp = {}
+            var videoList = null;
+            $rootScope.add = 'Hello to Transfer DATA';
+
+
+            $scope.edit = function (videoId) {
+                  $rootScope.rec = videoId;
+                  $window.location.href = '#!addChange';
+            };
+            $http.post('api/video/getvideos', JSON.stringify(pp))
+                  .then(function (response) {
+                        $scope.videoList = response.data;
+                  })
+            $scope.del = function (videoId) {
+
+                  $http.post('api/video/deleteVideo', JSON.stringify(videoId))
+                        .then(function (response) {
+                              console.log(response);
+                              $scope.loadVideos();
+                        })
+
+            }
+
+            $scope.loadVideos = function () {
+                  $http.post('api/video/getvideos', JSON.stringify(pp))
+                        .then(function (response) {
+                              $scope.videoList = response.data;
+                        })
+            }
+
+
+      }]);
+
+      app.controller('videoDetailsCTRL', ['$scope', '$http', '$rootScope', '$window', function ($scope, $http, $rootScope, $window) {
+            $scope.fileAsccy = null;
+            $scope.video = $rootScope.rec;
+            if ($scope.video) {
+                  $scope.name = $scope.video.name;
+                  $scope.autherName = $scope.video.autherName;
+                  $scope.price = $scope.video.price;
+                  $scope.imageStr = $scope.video.pic;
+                  $scope.fileAsccy = $scope.video.pic;
+            }
+
+            $scope.uploadFile = function (input) {
+
+                  var file = input.files[0];
+
+                  if (input.files[0] && file) {
+                        var reader = new FileReader();
+
+                        reader.onload = function (readerEvt) {
+                              var binaryString = readerEvt.target.result;
+                              document.getElementById("img").setAttribute('src', 'data:image/jpg;base64,' + btoa(binaryString));
+                              $scope.fileAsccy = btoa(binaryString);
+                        };
+
+                        reader.readAsBinaryString(file);
+                  }
+            }
+
+            $scope.save = function () {
+                  var videoRec = {
+                        id: null,
+                        name: $scope.name,
+                        autherName: $scope.autherName,
+                        price: $scope.price,
+                        pic: $scope.fileAsccy
+                  }
+
+                  var url = '';
+                  if ($scope.video.id) {
+                        url = 'api/video/updateVideo';
+                        videoRec.id = $scope.video.id;
+                  }
+                  else
+                        url = 'api/video/addVideo';
+
+
+                  $http.post(url, JSON.stringify(videoRec))
+                        .then(function (response) {
+                              if (response.data == true)
+                                    $scope.cancel();
+
+                        })
+
+            }
+
+            $scope.cancel = function () {
+                  $rootScope.rec = null;
+                  $window.location.href = '#/!';
+            }
+      }]);
+
+
+
+</script>

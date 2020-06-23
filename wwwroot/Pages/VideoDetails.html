@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+      <meta charset="utf-8" />
+      <title></title>
+      <script src="../lib/jquery/dist/jquery.js"></script>
+</head>
+<body ng-controller="videoDetailsCTRL">
+
+
+      <div class="row">
+            <div class="col-md-4">
+                  <div class="row" style="min-height:230px">
+                        <div class="col-md-12 center">
+                              <img id="img" src="{{'data:image/jpg;base64,'+imageStr}}" class="col-md-5" style="height:100%;width:192px;margin-left:-32px"/>
+                        </div>
+                  </div>
+                  <div class="row">
+                        <div class="col-md-6">
+                              <input type="file" class="custom-file-input" id="customFile" name="filename"
+                                     onchange="angular.element(this).scope().uploadFile(this)">
+                              <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                  </div>
+
+            </div>
+
+            <div class="col-md-8">
+                  <div class="form-group">
+                        <label for="name">Video Name</label>
+                        <input type="text" ng-model="name" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter Name">
+
+                  </div>
+                  <div class="form-group">
+                        <label for="autherName">Auther Name</label>
+                        <input type="text" ng-model="autherName" class="form-control" id="autherName" placeholder="Auther Name">
+                  </div>
+
+                  <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" ng-model="price" class="form-control" id="price" placeholder="Price">
+                  </div>
+                  <button type="button" class="btn btn-primary" ng-click="save()">Save</button>
+                  <button type="button" class="btn btn-light" ng-click="cancel()">Cancel</button>
+            </div>
+      </div>
+
+</body>
+</html>
